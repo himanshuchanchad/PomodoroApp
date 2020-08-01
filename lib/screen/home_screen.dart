@@ -11,12 +11,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Timer _everySecond;
   int currentTimer = 45;
-  int currentSecond = 59;
+  int defaultTimerValue = 45;
+  int currentSecond = 00;
   var timerstring = "45:00";
+  bool flag = true;
   void _getTimer(int value) {
-    currentTimer = value - 1;
-    currentSecond = 59;
-    timerstring = "${currentTimer - 1}:59";
+    setState(() {
+      defaultTimerValue = value;
+      if (flag) {
+        currentTimer = defaultTimerValue;
+        currentSecond = 00;
+        timerstring = "$currentTimer:00";
+      }
+    });
   }
 
   void _showBottomModal(BuildContext ctx) {
@@ -28,25 +35,46 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void subtract() {
+    if (currentSecond == 0) {
+      currentTimer = currentTimer - 1;
+      currentSecond = 10;
+      if (currentTimer < 0) {
+        _everySecond.cancel();
+        flag = true;
+        //TODO need to add break logic
+      }
+    } else {
+      currentSecond = currentSecond - 1;
+    }
+  }
+
   void _onPressed() {
-    _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) {
-      setState(() {
-        if (currentSecond == 0) {
-          currentSecond = 59;
-          if (currentTimer <0) {
-            _everySecond.cancel();
-          }
-          currentTimer = currentTimer - 1;
-        } else {
-          currentSecond = currentSecond - 1;
-        }
-        timerstring = "${currentTimer}:${currentSecond}";
+    if (this.flag) {
+      _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) {
+        setState(() {
+          this.subtract();
+          timerstring = "$currentTimer:$currentSecond";
+        });
       });
-    });
+      setState(() {
+        flag = false;
+      });
+    } else {
+      setState(() {
+        flag = true;
+        _everySecond.cancel();
+      });
+    }
   }
 
   void _reset() {
     _everySecond.cancel();
+    setState(() {
+      flag = true;
+      currentTimer = defaultTimerValue;
+      timerstring = "$currentTimer:00";
+    });
   }
 
   @override
@@ -72,18 +100,28 @@ class _HomeScreenState extends State<HomeScreen> {
             RaisedButton(
               color: Colors.blue,
               child: Text(
-                "START",
+                flag ? "START" : "PAUSE",
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: _onPressed,
             ),
             FlatButton(
-              child: Text("Reset"),
+              child: Text(
+                "Reset",
+                style: TextStyle(color: Colors.white),
+              ),
               onPressed: _reset,
+              color: Colors.blue,
             ),
             FlatButton(
-              child: Icon(Icons.add),
+              shape: new CircleBorder(),
+              child: Icon(
+                Icons.add,
+                size: 40,
+                color: Colors.white,
+              ),
               onPressed: () => _showBottomModal(context),
+              color: Colors.blue,
             )
           ],
         ),

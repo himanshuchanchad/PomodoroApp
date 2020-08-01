@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SetPomodoroTimer extends StatefulWidget {
   final Function setTimer;
@@ -29,8 +30,13 @@ class _SetPomodoroTimerState extends State<SetPomodoroTimer> {
           children: <Widget>[
             TextField(
               keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly,
+              ],
               maxLength: 2,
               controller: _timerController,
+              onSubmitted: (_)=>_submitData(),
+              autofocus: true,
               decoration: InputDecoration(
                 icon: Icon(Icons.timer),
                 hintText: "Time in minutes",
@@ -38,8 +44,8 @@ class _SetPomodoroTimerState extends State<SetPomodoroTimer> {
             ),
             RaisedButton(
               child: Text("SET"),
-              color: null,
-              textColor: null,
+              color: Colors.blue,
+              textColor: Colors.white,
               onPressed: _submitData,
             )
           ],

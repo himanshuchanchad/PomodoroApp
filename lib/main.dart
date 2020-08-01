@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import './screen/home_screen.dart';
+import './screen/settings.dart';
+import './screen/task_screeen.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,6 +16,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 1;
+  int minuteVal;
+  var screen = [TaskScreen(), HomeScreen(), Settings()];
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -22,14 +27,23 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-     SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        primaryColor: Colors.blue,
+        accentColor: Colors.white,
+        primaryTextTheme: TextTheme(
+          headline6:
+              TextStyle(backgroundColor: Colors.blue, color: Colors.white),
+        ),
+      ),
       home: Scaffold(
         appBar: AppBar(
           title: Text("Pomodoro App"),
         ),
-        body: HomeScreen(),
+        body: screen[_selectedIndex],
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
