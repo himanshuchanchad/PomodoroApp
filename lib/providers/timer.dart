@@ -4,11 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CurrentTimer with ChangeNotifier {
   int _minuteVal = 45;
-  int _second = 00;
+  int _second = 0;
   bool _flag = true;
   double _defaultMinuteVal = 45.0;
   Timer _everySecond;
-
+  String _timerString = '';
   CurrentTimer() {
     getDefaultVal();
   }
@@ -17,12 +17,14 @@ class CurrentTimer with ChangeNotifier {
   int getMinuteVal() => _minuteVal;
   int getSecond() => _second;
   bool getflag() => _flag;
-  
-  String getTimerString() {
+  String getTimerString() => _timerString;
+
+  void setTimerString() {
     if (_second < 10) {
-      return "$_minuteVal:0$_second";
+      _timerString = "$_minuteVal:0$_second";
+    }else{
+    _timerString = "$_minuteVal:$_second";
     }
-    return "$_minuteVal:$_second";
   }
 
   void toggleflag() {
@@ -36,6 +38,7 @@ class CurrentTimer with ChangeNotifier {
   void reset() {
     _minuteVal = _defaultMinuteVal.toInt();
     _second = 00;
+    setTimerString();
     notifyListeners();
   }
 
@@ -50,13 +53,13 @@ class CurrentTimer with ChangeNotifier {
     } else {
       _second = _second - 1;
     }
+    setTimerString();
     notifyListeners();
   }
 
   void startTimer() {
     _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) {
       subtract(_everySecond);
-      notifyListeners();
     });
   }
 
@@ -70,6 +73,8 @@ class CurrentTimer with ChangeNotifier {
       prefs.setString("minute", "45");
     } else {
       _defaultMinuteVal = double.parse(prefs.getString('minute'));
+      _minuteVal = _defaultMinuteVal.toInt();
+      setTimerString();
       notifyListeners();
     }
   }
