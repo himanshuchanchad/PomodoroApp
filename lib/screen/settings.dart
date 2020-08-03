@@ -30,7 +30,7 @@ class _SettingsState extends State<Settings> {
               min: 0,
               max: 59,
               onChanged: (double value) {
-                currentTimer.setDefaultVal(value);
+                currentTimer.changeDefaultVal(value);
               },
               onChangeEnd: (double value) {
                 currentTimer.setDefaultVal(value);

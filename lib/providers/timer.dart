@@ -17,6 +17,7 @@ class CurrentTimer with ChangeNotifier {
   int getMinuteVal() => _minuteVal;
   int getSecond() => _second;
   bool getflag() => _flag;
+  
   String getTimerString() {
     if (_second < 10) {
       return "$_minuteVal:0$_second";
@@ -66,17 +67,21 @@ class CurrentTimer with ChangeNotifier {
   void getDefaultVal() async {
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('minute')) {
-      print("Here");
-      prefs.setString("mimute", "45");
+      prefs.setString("minute", "45");
     } else {
       _defaultMinuteVal = double.parse(prefs.getString('minute'));
       notifyListeners();
     }
   }
 
+  void changeDefaultVal(double value) {
+    _defaultMinuteVal = value;
+    notifyListeners();
+  }
+
   void setDefaultVal(double value) async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString("minue", "$value");
+    prefs.setString("minute", "$value");
     _defaultMinuteVal = value;
     if (_everySecond == null || !_everySecond.isActive) {
       reset();
