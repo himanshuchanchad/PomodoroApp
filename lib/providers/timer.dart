@@ -9,31 +9,87 @@ class CurrentTimer with ChangeNotifier {
   double _defaultMinuteVal = 45.0;
   Timer _everySecond;
   String _timerString = '';
+  int _defaultShortbreak = 15;
+  int _shortbreak = 15;
+  int _noOfSessions = 6;
   CurrentTimer() {
     getDefaultVal();
   }
-
+  // getter
   double getDefaultMinuteVal() => _defaultMinuteVal;
   int getMinuteVal() => _minuteVal;
   int getSecond() => _second;
   bool getflag() => _flag;
   String getTimerString() => _timerString;
+  int getShortBreak() => _shortbreak;
+  int getDefaultShortBreak() => _defaultShortbreak;
+  int getNoOfSessions() => _noOfSessions;
 
+  void getDefaultVal() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('minute')) {
+      prefs.setString("minute", "45");
+      prefs.setString('shortbreak', "15");
+    } else {
+      _defaultMinuteVal = double.parse(prefs.getString('minute'));
+      _defaultShortbreak = int.parse(prefs.getString('shortbreak'));
+      _minuteVal = _defaultMinuteVal.toInt();
+      _shortbreak = _defaultShortbreak;
+      setTimerString();
+      notifyListeners();
+    }
+  }
+
+  // setter
   void setTimerString() {
     if (_second < 10) {
       _timerString = "$_minuteVal:0$_second";
-    }else{
-    _timerString = "$_minuteVal:$_second";
+    } else {
+      _timerString = "$_minuteVal:$_second";
     }
+  }
+
+  void setMinuteVal(int value) => _minuteVal = value;
+  // void resetSecond() => _second = 0;
+  void changeDefaultShortBreak(int value) {
+    _defaultShortbreak = value;
+    notifyListeners();
+  }
+
+  void setDefaultShortBreak(int value) async {
+    _defaultShortbreak = value;
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("shortbreak", "$value");
+    // if (_everySecond == null || !_everySecond.isActive) {
+    //   reset();
+    // }
+    notifyListeners();
+  }
+
+  void setNoOfSessions(int value) {
+    _noOfSessions = value;
+    notifyListeners();
+  }
+
+  void setDefaultMinuteVal(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("minute", "$value");
+    _defaultMinuteVal = value;
+    if (_everySecond == null || !_everySecond.isActive) {
+      reset();
+    }
+    notifyListeners();
+  }
+
+  void changeDefaultVal(double value) {
+    _defaultMinuteVal = value;
+    notifyListeners();
   }
 
   void toggleflag() {
     _flag = !_flag;
     notifyListeners();
   }
-
-  void resetSecond() => _second = 0;
-  void setMinuteVal(int value) => _minuteVal = value;
 
   void reset() {
     _minuteVal = _defaultMinuteVal.toInt();
@@ -65,32 +121,5 @@ class CurrentTimer with ChangeNotifier {
 
   void stopTimer() {
     _everySecond.cancel();
-  }
-
-  void getDefaultVal() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('minute')) {
-      prefs.setString("minute", "45");
-    } else {
-      _defaultMinuteVal = double.parse(prefs.getString('minute'));
-      _minuteVal = _defaultMinuteVal.toInt();
-      setTimerString();
-      notifyListeners();
-    }
-  }
-
-  void changeDefaultVal(double value) {
-    _defaultMinuteVal = value;
-    notifyListeners();
-  }
-
-  void setDefaultVal(double value) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("minute", "$value");
-    _defaultMinuteVal = value;
-    if (_everySecond == null || !_everySecond.isActive) {
-      reset();
-    }
-    notifyListeners();
   }
 }
