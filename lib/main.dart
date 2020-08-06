@@ -48,9 +48,11 @@ class _MyAppState extends State<MyApp> {
                 TextStyle(backgroundColor: Colors.blue, color: Colors.white),
           ),
         ),
+        
         home: Scaffold(
           appBar: AppBar(
-            title: Text("Pomodoro App"),
+            title: Center(child: Text("Pomodoro",style: TextStyle(fontStyle: FontStyle.italic),
+            )),
           ),
           body: screen[_selectedIndex],
           bottomNavigationBar: BottomNavigationBar(

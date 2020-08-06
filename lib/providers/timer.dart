@@ -2,16 +2,24 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/play_audio.dart';
+import '../widgets/music_dialog.dart';
+
 class CurrentTimer with ChangeNotifier {
   int _minuteVal = 45;
   int _second = 0;
-  bool _flag = true;
   double _defaultMinuteVal = 45.0;
   Timer _everySecond;
-  String _timerString = '';
   int _defaultShortbreak = 15;
   int _shortbreak = 15;
   int _noOfSessions = 6;
+
+  String _timerString = '';
+  bool _showDialog = false;
+  bool _startOrStop = true;
+  bool _workOrBreak = true;
+  PlayAudio _playAudio = PlayAudio();
+
   CurrentTimer() {
     getDefaultVal();
   }
@@ -19,11 +27,12 @@ class CurrentTimer with ChangeNotifier {
   double getDefaultMinuteVal() => _defaultMinuteVal;
   int getMinuteVal() => _minuteVal;
   int getSecond() => _second;
-  bool getflag() => _flag;
-  String getTimerString() => _timerString;
   int getShortBreak() => _shortbreak;
   int getDefaultShortBreak() => _defaultShortbreak;
   int getNoOfSessions() => _noOfSessions;
+  bool getflag() => _startOrStop;
+  bool getShowDialogStatus() => _showDialog;
+  String getTimerString() => _timerString;
 
   void getDefaultVal() async {
     final prefs = await SharedPreferences.getInstance();
@@ -49,8 +58,18 @@ class CurrentTimer with ChangeNotifier {
     }
   }
 
+  void setToggleDialogStatus() {
+    _showDialog = !_showDialog;
+    if (_showDialog) {
+      _playAudio.play();
+    } else {
+      _playAudio.stop();
+    }
+    notifyListeners();
+  }
+
   void setMinuteVal(int value) => _minuteVal = value;
-  // void resetSecond() => _second = 0;
+  void resetSecond() => _second = 0;
   void changeDefaultShortBreak(int value) {
     _defaultShortbreak = value;
     notifyListeners();
@@ -87,7 +106,7 @@ class CurrentTimer with ChangeNotifier {
   }
 
   void toggleflag() {
-    _flag = !_flag;
+    _startOrStop = !_startOrStop;
     notifyListeners();
   }
 
@@ -103,6 +122,8 @@ class CurrentTimer with ChangeNotifier {
       _minuteVal = _minuteVal - 1;
       _second = 59;
       if (_minuteVal < 0) {
+        _minuteVal = 0;
+        _second = 0;
         _everySecond.cancel();
         //TODO need to add break logic
       }
