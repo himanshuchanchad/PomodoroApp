@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/play_audio.dart';
-import '../widgets/music_dialog.dart';
 
 class CurrentTimer with ChangeNotifier {
   int _minuteVal = 45;
@@ -15,9 +14,9 @@ class CurrentTimer with ChangeNotifier {
   int _noOfSessions = 6;
 
   String _timerString = '';
-  bool _showDialog = false;
   bool _startOrStop = true;
   bool _workOrBreak = true;
+  
   PlayAudio _playAudio = PlayAudio();
 
   CurrentTimer() {
@@ -31,7 +30,7 @@ class CurrentTimer with ChangeNotifier {
   int getDefaultShortBreak() => _defaultShortbreak;
   int getNoOfSessions() => _noOfSessions;
   bool getflag() => _startOrStop;
-  bool getShowDialogStatus() => _showDialog;
+  // bool getShowDialogStatus() => _showDialog;
   String getTimerString() => _timerString;
 
   void getDefaultVal() async {
@@ -56,16 +55,6 @@ class CurrentTimer with ChangeNotifier {
     } else {
       _timerString = "$_minuteVal:$_second";
     }
-  }
-
-  void setToggleDialogStatus() {
-    _showDialog = !_showDialog;
-    if (_showDialog) {
-      _playAudio.play();
-    } else {
-      _playAudio.stop();
-    }
-    notifyListeners();
   }
 
   void setMinuteVal(int value) => _minuteVal = value;
@@ -117,15 +106,30 @@ class CurrentTimer with ChangeNotifier {
     notifyListeners();
   }
 
-  void subtract(Timer _everySecond) {
+  void subtract(Timer _everySecond, BuildContext context) {
     if (_second == 0) {
       _minuteVal = _minuteVal - 1;
-      _second = 59;
+      _second = 19;
       if (_minuteVal < 0) {
-        _minuteVal = 0;
-        _second = 0;
-        _everySecond.cancel();
-        //TODO need to add break logic
+        reset();
+        _playAudio.play();
+        showDialog(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: Title(
+                    color: Colors.white,
+                    child: Text("Take a break/start to work")),
+                actions: <Widget>[
+                  FlatButton(
+                      child: Text("Cancel"),
+                      onPressed: () {
+                        _playAudio.stop();
+                        Navigator.of(context).pop();
+                      })
+                ],
+              );
+            });
       }
     } else {
       _second = _second - 1;
@@ -134,9 +138,9 @@ class CurrentTimer with ChangeNotifier {
     notifyListeners();
   }
 
-  void startTimer() {
+  void startTimer(BuildContext context) {
     _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) {
-      subtract(_everySecond);
+      subtract(_everySecond, context);
     });
   }
 

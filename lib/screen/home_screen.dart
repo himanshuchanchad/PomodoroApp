@@ -13,9 +13,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Timer _everySecond;
 
-  void _onPressed(CurrentTimer currentTimer) {
+  void _onPressed(CurrentTimer currentTimer,BuildContext context) {
     if (currentTimer.getflag()) {
-      currentTimer.startTimer();
+      currentTimer.startTimer(context);
     } else {
       currentTimer.stopTimer();
     }
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.white,
                           ),
                     shape: CircleBorder(),
-                    onPressed: () => _onPressed(currentTimer),
+                    onPressed: () => _onPressed(currentTimer,context),
                   ),
                 ),
                 Container(

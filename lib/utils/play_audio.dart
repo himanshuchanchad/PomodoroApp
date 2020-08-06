@@ -17,9 +17,9 @@ class PlayAudio {
     }
   }
 
-  void stop() async {
-    _audioPlayer.stop();
-    _audioCache.clear("DVBBS.mp3");
-    _audioPlayer.dispose();
+  void stop(){
+    _audioPlayer?.stop();
+    _audioCache?.clear("DVBBS.mp3");
+    _audioPlayer?.dispose();
   }
 }
