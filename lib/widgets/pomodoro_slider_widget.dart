@@ -1,6 +1,4 @@
-import 'package:PomodoroApp/widgets/music_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 import 'package:provider/provider.dart';
 

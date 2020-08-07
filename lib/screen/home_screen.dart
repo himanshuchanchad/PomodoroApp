@@ -37,10 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final currentTimer = Provider.of<CurrentTimer>(context);
-    
-    //     var columnChildren = <Widget>[
-    //       ;
-
     return Container(
       decoration: new BoxDecoration(
         gradient: new LinearGradient(

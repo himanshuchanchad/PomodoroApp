@@ -1,8 +1,12 @@
-import 'package:PomodoroApp/providers/timer.dart';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import './providers/timer.dart';
+import './providers/Task.dart';
 import './screen/home_screen.dart';
 import './screen/settings.dart';
 import './screen/task_screeen.dart';
@@ -10,6 +14,10 @@ import './screen/task_screeen.dart';
 import './providers/timer.dart';
 
 void main() {
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+    if (kReleaseMode) exit(1);
+  };
   runApp(MyApp());
 }
 
@@ -21,11 +29,16 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 1;
   int minuteVal;
+  PageController _pageController = PageController(initialPage: 1);
   var screen = [TaskScreen(), HomeScreen(), Settings()];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _pageController.animateToPage(index,
+          duration: Duration(seconds: 1),
+          curve: Curves.ease,
+          );
     });
   }
 
@@ -35,7 +48,8 @@ class _MyAppState extends State<MyApp> {
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create:(_) => CurrentTimer())
+        ChangeNotifierProvider(create: (_) => CurrentTimer()),
+        ChangeNotifierProvider(create: (_) => Task()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -48,13 +62,25 @@ class _MyAppState extends State<MyApp> {
                 TextStyle(backgroundColor: Colors.blue, color: Colors.white),
           ),
         ),
-        
         home: Scaffold(
           appBar: AppBar(
-            title: Center(child: Text("Pomodoro",style: TextStyle(fontStyle: FontStyle.italic),
+            title: Center(
+                child: Text(
+              "Pomodoro",
+              style: TextStyle(fontStyle: FontStyle.italic),
             )),
           ),
-          body: screen[_selectedIndex],
+          // body: screen[_selectedIndex],
+          body: PageView(
+            controller: _pageController,
+            children: screen,
+            scrollDirection: Axis.horizontal,
+            onPageChanged: (value) {
+              setState(() {
+                _selectedIndex = value;
+              });
+            },
+          ),
           bottomNavigationBar: BottomNavigationBar(
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
