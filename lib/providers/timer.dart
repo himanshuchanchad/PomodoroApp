@@ -7,31 +7,37 @@ import '../utils/play_audio.dart';
 class CurrentTimer with ChangeNotifier {
   int _minuteVal = 45;
   int _second = 0;
-  double _defaultMinuteVal = 45.0;
+
+  int _defaultMinuteVal = 45;
   Timer _everySecond;
   int _defaultShortbreak = 15;
   int _shortbreak = 15;
   int _noOfSessions = 6;
 
   String _timerString = '';
-  bool _startOrStop = true;
+  bool _startOrStop = false;
   bool _workOrBreak = true;
-  
+  int _totalWorkTime = 0;
+  int _totalBreakTime = 0;
+
   PlayAudio _playAudio = PlayAudio();
 
   CurrentTimer() {
     getDefaultVal();
   }
   // getter
-  double getDefaultMinuteVal() => _defaultMinuteVal;
-  int getMinuteVal() => _minuteVal;
-  int getSecond() => _second;
-  int getShortBreak() => _shortbreak;
-  int getDefaultShortBreak() => _defaultShortbreak;
-  int getNoOfSessions() => _noOfSessions;
-  bool getflag() => _startOrStop;
-  // bool getShowDialogStatus() => _showDialog;
-  String getTimerString() => _timerString;
+  int get defaultMinuteVal => _defaultMinuteVal;
+  int get minuteVal => _minuteVal;
+  int get second => _second;
+  int get shortBreak => _shortbreak;
+  int get defaultShortBreak => _defaultShortbreak;
+  int get noOfSessions => _noOfSessions;
+  bool get flag => _startOrStop;
+  bool get workorBreakStatus => _workOrBreak;
+  String get getTimerString => _timerString;
+  int get totalWorkTime => _totalWorkTime;
+  int get totalBreakTime => _totalBreakTime;
+
 
   void getDefaultVal() async {
     final prefs = await SharedPreferences.getInstance();
@@ -39,7 +45,7 @@ class CurrentTimer with ChangeNotifier {
       prefs.setString("minute", "45");
       prefs.setString('shortbreak', "15");
     } else {
-      _defaultMinuteVal = double.parse(prefs.getString('minute'));
+      _defaultMinuteVal = int.parse(prefs.getString('minute'));
       _defaultShortbreak = int.parse(prefs.getString('shortbreak'));
       _minuteVal = _defaultMinuteVal.toInt();
       _shortbreak = _defaultShortbreak;
@@ -68,9 +74,6 @@ class CurrentTimer with ChangeNotifier {
     _defaultShortbreak = value;
     final prefs = await SharedPreferences.getInstance();
     prefs.setString("shortbreak", "$value");
-    // if (_everySecond == null || !_everySecond.isActive) {
-    //   reset();
-    // }
     notifyListeners();
   }
 
@@ -82,7 +85,7 @@ class CurrentTimer with ChangeNotifier {
   void setDefaultMinuteVal(double value) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString("minute", "$value");
-    _defaultMinuteVal = value;
+    _defaultMinuteVal = value.toInt();
     if (_everySecond == null || !_everySecond.isActive) {
       reset();
     }
@@ -90,18 +93,25 @@ class CurrentTimer with ChangeNotifier {
   }
 
   void changeDefaultVal(double value) {
-    _defaultMinuteVal = value;
+    _defaultMinuteVal = value.toInt();
     notifyListeners();
   }
 
   void toggleflag() {
     _startOrStop = !_startOrStop;
-    notifyListeners();
+    notifyListeners(); // Remove comments only if it's used change from reset
   }
 
   void reset() {
-    _minuteVal = _defaultMinuteVal.toInt();
+    if (_workOrBreak) {
+      _minuteVal = _defaultShortbreak.toInt();
+    } else {
+      _minuteVal = _defaultMinuteVal.toInt();
+    }
+    _workOrBreak = !_workOrBreak;
     _second = 00;
+    stopTimer();
+    _startOrStop = false;
     setTimerString();
     notifyListeners();
   }
@@ -109,7 +119,7 @@ class CurrentTimer with ChangeNotifier {
   void subtract(Timer _everySecond, BuildContext context) {
     if (_second == 0) {
       _minuteVal = _minuteVal - 1;
-      _second = 19;
+      _second = 19; // 19 for debugging
       if (_minuteVal < 0) {
         reset();
         _playAudio.play();
@@ -142,9 +152,17 @@ class CurrentTimer with ChangeNotifier {
     _everySecond = Timer.periodic(Duration(seconds: 1), (Timer t) {
       subtract(_everySecond, context);
     });
+    _startOrStop = true;
+    notifyListeners();
   }
 
   void stopTimer() {
-    _everySecond.cancel();
+    try {
+      _everySecond.cancel();
+    } catch (e) {
+      _everySecond = null;
+    }
+    _startOrStop = false;
+    notifyListeners();
   }
 }

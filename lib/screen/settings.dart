@@ -20,8 +20,8 @@ class Settings extends StatelessWidget {
           ),
           Container(
             child: Slider(
-              value: currentTimer.getDefaultMinuteVal(),
-              min: 0,
+              value: currentTimer.defaultMinuteVal.toDouble(),
+              min: 1,
               max: 59,
               onChanged: (double value) {
                 currentTimer.changeDefaultVal(value);
@@ -29,8 +29,8 @@ class Settings extends StatelessWidget {
               onChangeEnd: (double value) {
                 currentTimer.setDefaultMinuteVal(value);
               },
-              divisions: 59,
-              label: "${currentTimer.getDefaultMinuteVal().toInt()}",
+              divisions: 58,
+              label: "${currentTimer.defaultMinuteVal}",
             ),
           ),
           SizedBox(
@@ -41,8 +41,8 @@ class Settings extends StatelessWidget {
           ),
           Container(
             child: Slider(
-              value: currentTimer.getDefaultShortBreak().toDouble(),
-              min: 0,
+              value: currentTimer.defaultShortBreak.toDouble(),
+              min: 1,
               max: 20,
               onChanged: (double value) {
                 currentTimer.changeDefaultShortBreak(value.toInt());
@@ -50,8 +50,8 @@ class Settings extends StatelessWidget {
               onChangeEnd: (double value) {
                 currentTimer.setDefaultShortBreak(value.toInt());
               },
-              divisions: 20,
-              label: "${currentTimer.getDefaultShortBreak()}",
+              divisions: 19,
+              label: "${currentTimer.defaultShortBreak}",
               activeColor: Colors.red,
             ),
           ),

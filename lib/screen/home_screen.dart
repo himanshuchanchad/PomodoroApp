@@ -14,24 +14,15 @@ class _HomeScreenState extends State<HomeScreen> {
   // Timer _everySecond;
 
   void _onPressed(CurrentTimer currentTimer,BuildContext context) {
-    if (currentTimer.getflag()) {
+    if (!currentTimer.flag){
       currentTimer.startTimer(context);
     } else {
       currentTimer.stopTimer();
     }
-    currentTimer.toggleflag();
   }
 
   void _reset(CurrentTimer currentTimer) {
-    try {
-      currentTimer.stopTimer();
-    } catch (e) {
-      print("Nothing to worry about $e");
-    }
     currentTimer.reset();
-    if (!currentTimer.getflag()) {
-      currentTimer.toggleflag();
-    }
   }
 
   @override
@@ -43,8 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color.fromARGB(255, 0, 124, 232),
-            Color.fromARGB(255, 167, 183, 196),
+            Color.fromARGB(255, 204, 43, 94),
+            Color.fromARGB(255, 117, 58, 136),
           ],
         ),
       ),
@@ -55,7 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             PomodoroCircularSlider(),
-            Expanded(child: Container()),
+            Expanded(child: Container(child: Text(
+              currentTimer.workorBreakStatus ? "Working":"Break",
+              style: TextStyle(color: Colors.white,fontSize: 40 ),
+            ),)),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -64,16 +58,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin: EdgeInsets.only(bottom: 40),
                   height: 60,
                   child: RaisedButton(
-                    color: Colors.blue,
-                    child: currentTimer.getflag()
+                    color: Colors.blue[900],
+                    child: currentTimer.flag
                         ? Icon(
+                            Icons.pause,
+                            color: Colors.white,
+                          )
+                        : Icon(
                             Icons.play_arrow,
                             color: Colors.white,
                             size: 40,
-                          )
-                        : Icon(
-                            Icons.pause,
-                            color: Colors.white,
                           ),
                     shape: CircleBorder(),
                     onPressed: () => _onPressed(currentTimer,context),
@@ -89,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: 40,
                     ),
                     onPressed: () => _reset(currentTimer),
-                    color: Colors.blue,
+                    color: Colors.blue[900],
                     shape: CircleBorder(),
                   ),
                 ),

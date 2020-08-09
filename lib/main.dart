@@ -54,12 +54,13 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          primaryColor: Colors.black,
           primarySwatch: Colors.blue,
-          primaryColor: Colors.blue,
+          splashColor: Colors.pink[200],
           accentColor: Colors.white,
           primaryTextTheme: TextTheme(
             headline6:
-                TextStyle(backgroundColor: Colors.blue, color: Colors.white),
+                TextStyle(backgroundColor: Colors.black, color: Colors.white),
           ),
         ),
         home: Scaffold(
@@ -98,9 +99,9 @@ class _MyAppState extends State<MyApp> {
             ],
             selectedFontSize: 16.0,
             onTap: _onItemTapped,
-            backgroundColor: Colors.blue,
+            backgroundColor: Colors.black,
             selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.pink,
+            unselectedItemColor: Colors.orange[400],
             currentIndex: _selectedIndex,
             type: BottomNavigationBarType.fixed,
           ),

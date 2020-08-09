@@ -49,13 +49,16 @@ class TaskTile extends StatelessWidget {
     return Container(
         child: Card(
       elevation: 5,
-      child: Column(
-        children: <Widget>[
-          Text(title),
-          Text(shortDescription),
-          Text(noOfSessions.toString()),
-          Text(getPriorityString(priority)),
-        ],
+      child: FlatButton(
+        onPressed: ()=>print("you clicked"),
+        child: Column(
+          children: <Widget>[
+            Text(title),
+            Text(shortDescription),
+            Text(noOfSessions.toString()),
+            Text(getPriorityString(priority)),
+          ],
+        ),
       ),
     ));
   }

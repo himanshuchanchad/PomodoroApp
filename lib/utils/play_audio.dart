@@ -9,7 +9,6 @@ class PlayAudio {
   
   void play() async {
     _audioCache = AudioCache();
-    // _audioCache.load(musicPath).then((value) => null);
     try {
       _audioPlayer = await _audioCache.play(musicPath);
     } catch (e) {
@@ -19,7 +18,7 @@ class PlayAudio {
 
   void stop(){
     _audioPlayer?.stop();
-    _audioCache?.clear("DVBBS.mp3");
-    _audioPlayer?.dispose();
+    // _audioCache?.clear("DVBBS.mp3");
+    // _audioPlayer?.dispose();
   }
 }

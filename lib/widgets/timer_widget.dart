@@ -12,7 +12,7 @@ class TimerWidget extends StatelessWidget {
       children: <Widget>[
         Container(
           child: Text(
-            currentTimer.getTimerString(),
+            currentTimer.getTimerString,
             style: TextStyle(
               color: Colors.white,
               fontSize: MediaQuery.of(context).size.height * 0.1,
