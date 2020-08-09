@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import '../providers/Task.dart';
+
+import '../utils/priority.dart';
 
 class TaskTile extends StatelessWidget {
   final String title;
@@ -24,18 +24,39 @@ class TaskTile extends StatelessWidget {
     this.priority,
   });
 
+  String getPriorityString(Priority priority) {
+    if (priority == Priority.Low) {
+      return "Low";
+    }
+    if (priority == Priority.Medium) {
+      return "Medium";
+    }
+    return "High";
+  }
+
+  Color getPriorityColor(Priority priority) {
+    if (priority == Priority.Low) {
+      return Colors.white;
+    }
+    if (priority == Priority.Medium) {
+      return Colors.green;
+    }
+    return Colors.red[900];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Card(
-        margin: EdgeInsets.all(10),
-        child: ListTile(
-          title: Text(title),
-          subtitle: Text(shortDescription),
-          trailing: Text(noOfSessions.toString()),
-          
-        )
-        ),
-      );
+        child: Card(
+      elevation: 5,
+      child: Column(
+        children: <Widget>[
+          Text(title),
+          Text(shortDescription),
+          Text(noOfSessions.toString()),
+          Text(getPriorityString(priority)),
+        ],
+      ),
+    ));
   }
 }

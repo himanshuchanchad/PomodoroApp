@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import './providers/timer.dart';
-import './providers/Task.dart';
+import 'providers/task.dart';
 import './screen/home_screen.dart';
 import './screen/settings.dart';
 import './screen/task_screeen.dart';

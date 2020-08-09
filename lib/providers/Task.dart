@@ -1,8 +1,8 @@
-import 'dart:async';
+// import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum Priority { High, Low, Medium }
+import '../utils/priority.dart';
 
 class TaskItem {
   int id;
@@ -43,7 +43,8 @@ class Task with ChangeNotifier {
     }
     return {..._tasks};
   }
-  int getLength() =>_tasks.isEmpty ? 0:_tasks.length  ;
+
+  int getLength() => _tasks.isEmpty ? 0 : _tasks.length;
   // Task() {
   //    getTaskFromSharedPreferences();
   // }
@@ -66,6 +67,7 @@ class Task with ChangeNotifier {
               minuteBreakTimer: minuteBreakTimer,
               priority: priority,
             ));
+    _uniqueID++;
     notifyListeners();
   }
 

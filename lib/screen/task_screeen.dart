@@ -2,24 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/task_tile.dart';
-import '../providers/Task.dart';
+import '../widgets/add_task_form.dart';
+import '../providers/task.dart';
 
 class TaskScreen extends StatelessWidget {
   void _addTask(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (ctx) => Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.indigo[300],
-              child: Center(
-                child: FlatButton(
-                  color: Colors.amber[700],
-                  child: Text("delete"),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-            ));
+    // showDialog(
+    //     context: context,
+    //     builder: (ctx) => AddTaskForm(),
+    // );
+    Navigator.of(context).push(new MaterialPageRoute<Null>(
+      builder: (BuildContext context) {
+        return AddTaskForm();
+      },
+      fullscreenDialog: true,
+    ));
   }
 
   @override
@@ -27,6 +24,7 @@ class TaskScreen extends StatelessWidget {
     final taskProvider = Provider.of<Task>(context);
     final task = taskProvider.tasks;
     return Column(
+      
       children: <Widget>[
         Expanded(
           child: taskProvider.getLength() == 0
