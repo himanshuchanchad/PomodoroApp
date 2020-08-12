@@ -2,13 +2,16 @@ import 'package:PomodoroApp/providers/timer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/timer.dart';
+import '../providers/task.dart';
 
 class Settings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final currentTimer = Provider.of<CurrentTimer>(context);
+    final currentTask = Provider.of<Task>(context);
     return Container(
+      decoration: BoxDecoration(
+          color: Colors.black,
+          ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -16,42 +19,48 @@ class Settings extends StatelessWidget {
             height: 20,
           ),
           Container(
-            child: Text("Minutes"),
+            child: Text(
+              "Minutes",
+              style: TextStyle(color: Colors.white,fontSize: 20),
+            ),
           ),
           Container(
             child: Slider(
-              value: currentTimer.defaultMinuteVal.toDouble(),
+              value: currentTask.defaultMinuteWorkTimer,
               min: 1,
               max: 59,
               onChanged: (double value) {
-                currentTimer.changeDefaultVal(value);
+                currentTask.setDefaultMinuteWorkTimer(value);
               },
               onChangeEnd: (double value) {
-                currentTimer.setDefaultMinuteVal(value);
+                currentTask.setDefaultMinuteWorkTimer(value);
               },
               divisions: 58,
-              label: "${currentTimer.defaultMinuteVal}",
+              label: "${currentTask.defaultMinuteWorkTimer.toInt()}",
             ),
           ),
           SizedBox(
             height: 10,
           ),
           Container(
-            child: Text("Short Break"),
+            child: Text(
+              "Short Break",
+              style: TextStyle(color: Colors.white,fontSize: 20),
+            ),
           ),
           Container(
             child: Slider(
-              value: currentTimer.defaultShortBreak.toDouble(),
+              value: currentTask.defaultMinuteBreakTimer,
               min: 1,
               max: 20,
               onChanged: (double value) {
-                currentTimer.changeDefaultShortBreak(value.toInt());
+                currentTask.setDefaultMinuteBreakTimer(value);
               },
               onChangeEnd: (double value) {
-                currentTimer.setDefaultShortBreak(value.toInt());
+                currentTask.setDefaultMinuteBreakTimer(value);
               },
               divisions: 19,
-              label: "${currentTimer.defaultShortBreak}",
+              label: "${currentTask.defaultMinuteBreakTimer.toInt()}",
               activeColor: Colors.red,
             ),
           ),

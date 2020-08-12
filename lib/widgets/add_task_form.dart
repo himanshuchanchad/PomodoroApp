@@ -163,9 +163,14 @@ class _AddTaskFormState extends State<AddTaskForm> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     RaisedButton(
-                      child: Text("Low"),
+                      child: Text("Low",
+                        style: TextStyle(
+                          color: taskPriority == Priority.Low
+                              ? Colors.white
+                              : Colors.black,
+                        ),),
                       color: taskPriority == Priority.Low
-                          ? Colors.blue
+                          ? Colors.green
                           : Colors.white,
                       onPressed: () {
                         setState(() {
@@ -174,7 +179,14 @@ class _AddTaskFormState extends State<AddTaskForm> {
                       },
                     ),
                     RaisedButton(
-                      child: Text("Medium"),
+                      child: Text(
+                        "Medium",
+                        style: TextStyle(
+                          color: taskPriority == Priority.Medium
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
                       color: taskPriority == Priority.Medium
                           ? Colors.blue
                           : Colors.white,
@@ -185,9 +197,16 @@ class _AddTaskFormState extends State<AddTaskForm> {
                       },
                     ),
                     RaisedButton(
-                      child: Text("High"),
+                      child: Text(
+                        "High",
+                        style: TextStyle(
+                          color: taskPriority == Priority.High
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
                       color: taskPriority == Priority.High
-                          ? Colors.blue
+                          ? Colors.red
                           : Colors.white,
                       onPressed: () {
                         setState(() {

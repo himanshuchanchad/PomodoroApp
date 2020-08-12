@@ -11,8 +11,6 @@ import './screen/home_screen.dart';
 import './screen/settings.dart';
 import './screen/task_screeen.dart';
 
-import './providers/timer.dart';
-
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
@@ -60,7 +58,8 @@ class _MyAppState extends State<MyApp> {
           accentColor: Colors.white,
           primaryTextTheme: TextTheme(
             headline6:
-                TextStyle(backgroundColor: Colors.black, color: Colors.white),
+                TextStyle(color: Colors.white,),
+              
           ),
         ),
         home: Scaffold(

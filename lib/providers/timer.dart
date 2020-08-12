@@ -1,60 +1,75 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../utils/play_audio.dart';
 
 class CurrentTimer with ChangeNotifier {
+  int id;
+  String _title = "";
+  String _shortDescription = "";
+  int _noOfSessions = 6;
+  int _currentSession = 0;
+
   int _minuteVal = 45;
   int _second = 0;
+  int _minuteWorkTimer = 45;
+  int _minuteBreakTimer = 15;
 
-  int _defaultMinuteVal = 45;
-  Timer _everySecond;
-  int _defaultShortbreak = 15;
-  int _shortbreak = 15;
-  int _noOfSessions = 6;
-
-  String _timerString = '';
-  bool _startOrStop = false;
-  bool _workOrBreak = true;
   int _totalWorkTime = 0;
   int _totalBreakTime = 0;
 
+  bool _workOrBreak = true;
+  bool _startOrStop = false;
+
+  String _timerString = '';
+  Timer _everySecond;
   PlayAudio _playAudio = PlayAudio();
 
   CurrentTimer() {
     getDefaultVal();
   }
   // getter
-  int get defaultMinuteVal => _defaultMinuteVal;
   int get minuteVal => _minuteVal;
   int get second => _second;
-  int get shortBreak => _shortbreak;
-  int get defaultShortBreak => _defaultShortbreak;
+  int get minuteWorkTimer => _minuteWorkTimer;
+  int get minuteBreakTimer => _minuteBreakTimer;
   int get noOfSessions => _noOfSessions;
-  bool get flag => _startOrStop;
-  bool get workorBreakStatus => _workOrBreak;
-  String get getTimerString => _timerString;
   int get totalWorkTime => _totalWorkTime;
   int get totalBreakTime => _totalBreakTime;
 
+  bool get flag => _startOrStop;
+  bool get workorBreakStatus => _workOrBreak;
+
+  String get timerString => _timerString;
+  String get title => _title;
+  String get shortDescription => _shortDescription;
 
   void getDefaultVal() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('minute')) {
-      prefs.setString("minute", "45");
-      prefs.setString('shortbreak', "15");
-    } else {
-      _defaultMinuteVal = int.parse(prefs.getString('minute'));
-      _defaultShortbreak = int.parse(prefs.getString('shortbreak'));
-      _minuteVal = _defaultMinuteVal.toInt();
-      _shortbreak = _defaultShortbreak;
-      setTimerString();
-      notifyListeners();
-    }
+    setTimerString();
   }
 
   // setter
+  void loadTask(
+      int id,
+      String title,
+      String shortDescription,
+      int minuteWorkTimer,
+      int minuteBreakTimer,
+      int noOfSessions,
+      int currentSession,
+      int totalWorkTime,
+      int totaBreakTime) {
+      id = id;
+      _title = title;
+      _shortDescription = shortDescription;
+      _minuteWorkTimer = minuteWorkTimer;
+      _minuteBreakTimer = minuteBreakTimer;
+      _noOfSessions = noOfSessions;
+      _currentSession = currentSession;
+      _totalWorkTime = totalWorkTime;
+      _totalBreakTime = totaBreakTime;
+      notifyListeners();
+  }
+
   void setTimerString() {
     if (_second < 10) {
       _timerString = "$_minuteVal:0$_second";
@@ -63,37 +78,8 @@ class CurrentTimer with ChangeNotifier {
     }
   }
 
-  void setMinuteVal(int value) => _minuteVal = value;
-  void resetSecond() => _second = 0;
-  void changeDefaultShortBreak(int value) {
-    _defaultShortbreak = value;
-    notifyListeners();
-  }
-
-  void setDefaultShortBreak(int value) async {
-    _defaultShortbreak = value;
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("shortbreak", "$value");
-    notifyListeners();
-  }
-
   void setNoOfSessions(int value) {
     _noOfSessions = value;
-    notifyListeners();
-  }
-
-  void setDefaultMinuteVal(double value) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString("minute", "$value");
-    _defaultMinuteVal = value.toInt();
-    if (_everySecond == null || !_everySecond.isActive) {
-      reset();
-    }
-    notifyListeners();
-  }
-
-  void changeDefaultVal(double value) {
-    _defaultMinuteVal = value.toInt();
     notifyListeners();
   }
 
@@ -104,14 +90,19 @@ class CurrentTimer with ChangeNotifier {
 
   void reset() {
     if (_workOrBreak) {
-      _minuteVal = _defaultShortbreak.toInt();
+      // TODO logic improve
+      _totalWorkTime += _minuteWorkTimer.toInt() - _minuteVal;
+      _minuteVal = _minuteBreakTimer.toInt();
     } else {
-      _minuteVal = _defaultMinuteVal.toInt();
+      //TODO logic improve
+      _totalBreakTime += _minuteBreakTimer.toInt() - _minuteVal;
+      _minuteVal = _minuteWorkTimer.toInt();
     }
     _workOrBreak = !_workOrBreak;
+    _currentSession++;
     _second = 00;
     stopTimer();
-    _startOrStop = false;
+    // _startOrStop = false;
     setTimerString();
     notifyListeners();
   }
@@ -119,7 +110,8 @@ class CurrentTimer with ChangeNotifier {
   void subtract(Timer _everySecond, BuildContext context) {
     if (_second == 0) {
       _minuteVal = _minuteVal - 1;
-      _second = 19; // 19 for debugging
+      _second = 19;
+      // TODO 19 for debugging
       if (_minuteVal < 0) {
         reset();
         _playAudio.play();
@@ -159,9 +151,8 @@ class CurrentTimer with ChangeNotifier {
   void stopTimer() {
     try {
       _everySecond.cancel();
-    } catch (e) {
-      _everySecond = null;
-    }
+    } catch (e) {}
+    _everySecond = null;
     _startOrStop = false;
     notifyListeners();
   }

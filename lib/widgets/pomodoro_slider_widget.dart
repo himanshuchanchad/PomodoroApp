@@ -9,26 +9,25 @@ class PomodoroCircularSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentTimer = Provider.of<CurrentTimer>(context);
-    return   Container(
+    return Container(
       padding: const EdgeInsets.only(top: 50),
       height: 300,
-      width:  double.infinity,
-      child:  SleekCircularSlider(
+      width: double.infinity,
+      child: SleekCircularSlider(
         innerWidget: (double value) {
           return TimerWidget();
         },
-
         appearance: CircularSliderAppearance(
           customWidths: CustomSliderWidths(progressBarWidth: 10),
-          customColors:CustomSliderColors(
-            progressBarColors: <Color>[Colors.white,Colors.green[300]],
-            hideShadow: true,
-            trackColor: Colors.amber[300]
-            // progressBarColor: Colors.white,
-          ) ,
+          customColors: CustomSliderColors(
+              progressBarColors: <Color>[Colors.white, Colors.green[300]],
+              hideShadow: true,
+              trackColor: Colors.amber[300]
+              // progressBarColor: Colors.white,
+              ),
         ),
-        min: 00,
-        max: currentTimer.defaultMinuteVal.toDouble(),
+        min: 0,
+        max: currentTimer.workorBreakStatus? currentTimer.minuteWorkTimer.toDouble():currentTimer.minuteBreakTimer.toDouble(),
         initialValue: currentTimer.minuteVal.toDouble(),
       ),
     );

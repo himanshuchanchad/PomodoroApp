@@ -13,17 +13,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Timer _everySecond;
 
-  void _onPressed(CurrentTimer currentTimer,BuildContext context) {
-    if (!currentTimer.flag){
+  void _onPressed(CurrentTimer currentTimer, BuildContext context) {
+    if (!currentTimer.flag) {
       currentTimer.startTimer(context);
     } else {
       currentTimer.stopTimer();
     }
   }
 
-  void _reset(CurrentTimer currentTimer) {
-    currentTimer.reset();
-  }
+  // void _reset(CurrentTimer currentTimer) {
+  //   currentTimer.reset();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Color.fromARGB(255, 117, 58, 136),
           ],
         ),
+        // color: Colors.black,
       ),
       width: double.infinity,
       height: double.infinity,
@@ -46,10 +47,26 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             PomodoroCircularSlider(),
-            Expanded(child: Container(child: Text(
-              currentTimer.workorBreakStatus ? "Working":"Break",
-              style: TextStyle(color: Colors.white,fontSize: 40 ),
-            ),)),
+            Expanded(
+                child: Column(
+              children: [
+                Container(
+                  child: Text(
+                    currentTimer.workorBreakStatus ? "Working" : "Break",
+                    style: TextStyle(color: Colors.white, fontSize: 40),
+                  ),
+                ),
+                Container(
+                  child: Text(currentTimer.title,style: TextStyle(color: Colors.white,fontSize: 40)),
+                ),
+                Container(
+                  child: Text(
+                    "${currentTimer.totalWorkTime}",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            )),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -70,23 +87,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             size: 40,
                           ),
                     shape: CircleBorder(),
-                    onPressed: () => _onPressed(currentTimer,context),
+                    onPressed: () => _onPressed(currentTimer, context),
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 40, left: 30),
-                  height: 60,
-                  child: RaisedButton(
-                    child: Icon(
-                      Icons.settings_backup_restore,
-                      color: Colors.white,
-                      size: 40,
-                    ),
-                    onPressed: () => _reset(currentTimer),
-                    color: Colors.blue[900],
-                    shape: CircleBorder(),
-                  ),
-                ),
+                // Container(
+                //   margin: EdgeInsets.only(bottom: 40, left: 30),
+                //   height: 60,
+                //   child: RaisedButton(
+                //     child: Icon(
+                //       Icons.settings_backup_restore,
+                //       color: Colors.white,
+                //       size: 40,
+                //     ),
+                //     onPressed: () => _reset(currentTimer),
+                //     color: Colors.blue[900],
+                //     shape: CircleBorder(),
+                //   ),
+                // ),
               ],
             ),
           ],
