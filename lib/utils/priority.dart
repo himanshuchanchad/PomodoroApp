@@ -1,5 +1,7 @@
 
 
+import 'package:flutter/material.dart';
+
 enum Priority { High, Low, Medium }
 
 String getPriorityString(Priority priority) {
@@ -21,3 +23,13 @@ Priority getPriorityEnum(String priority){
     }
         return Priority.High;  
 }
+
+Color getPriorityColor(Priority priority) {
+    if (priority == Priority.Low) {
+      return Colors.green;
+    }
+    if (priority == Priority.Medium) {
+      return Colors.blue;
+    }
+    return Colors.red[900];
+  }

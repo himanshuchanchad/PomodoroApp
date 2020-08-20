@@ -5,8 +5,10 @@ import '../utils/priority.dart';
 import '../providers/task.dart';
 
 class AddTaskForm extends StatefulWidget {
+  TaskItem task;
+  AddTaskForm({@required this.task});
   @override
-  _AddTaskFormState createState() => _AddTaskFormState();
+  _AddTaskFormState createState() => _AddTaskFormState(task);
 }
 
 class _AddTaskFormState extends State<AddTaskForm> {
@@ -18,7 +20,19 @@ class _AddTaskFormState extends State<AddTaskForm> {
   double _workTimer = 45;
   double _breakTimer = 15;
   Priority taskPriority = Priority.Low;
+  TaskItem task;
 
+  _AddTaskFormState(TaskItem task) {
+    if (task != null) {
+      _noOfSession = task.noOfSessions.toDouble();
+      _workTimer = task.minuteWorkTimer.toDouble();
+      _breakTimer = task.minuteBreakTimer.toDouble();
+      taskPriority = task.priority;
+      _titleController.text = task.title;
+      _descriptionController.text = task.shortDescription;
+    }
+    this.task = task;
+  }
   @override
   void dispose() {
     _descriptionFocusNode.dispose();
@@ -32,31 +46,42 @@ class _AddTaskFormState extends State<AddTaskForm> {
     if (!isValid) {
       return;
     }
-    try {
-      await Provider.of<Task>(context, listen: false).addTask(
-          _titleController.text,
-          _descriptionController.text,
-          _noOfSession.toInt(),
-          _workTimer.toInt(),
-          _breakTimer.toInt(),
-          taskPriority);
-    } catch (error) {
-      print(error);
-      await showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text("An error occured"),
-          content: Text("Error occured"),
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text("Okay"),
-            )
-          ],
-        ),
-      );
-      return;
+    if (task != null) {
+      // update the task
+      task.title = _titleController.text;
+      task.shortDescription = _descriptionController.text;
+      task.noOfSessions = _noOfSession.toInt();
+      task.minuteBreakTimer = _breakTimer.toInt();
+      task.minuteWorkTimer = _workTimer.toInt();
+      task.priority = taskPriority;
+      Provider.of<Task>(context, listen: false).updateTask(task);
+    } else {
+      try {
+        Provider.of<Task>(context, listen: false).addTask(
+            _titleController.text,
+            _descriptionController.text,
+            _noOfSession.toInt(),
+            _workTimer.toInt(),
+            _breakTimer.toInt(),
+            taskPriority);
+      } catch (error) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text("An error occured"),
+            content: Text("Error occured"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text("Okay"),
+              )
+            ],
+          ),
+        );
+        return;
+      }
     }
+
     Navigator.of(context).pop();
   }
 
@@ -163,12 +188,14 @@ class _AddTaskFormState extends State<AddTaskForm> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     RaisedButton(
-                      child: Text("Low",
+                      child: Text(
+                        "Low",
                         style: TextStyle(
                           color: taskPriority == Priority.Low
                               ? Colors.white
                               : Colors.black,
-                        ),),
+                        ),
+                      ),
                       color: taskPriority == Priority.Low
                           ? Colors.green
                           : Colors.white,

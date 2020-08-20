@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'dart:async';
 import 'package:provider/provider.dart';
 
 import '../providers/timer.dart';
 import '../widgets/pomodoro_slider_widget.dart';
+import '../utils/priority.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,8 +11,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Timer _everySecond;
-
   void _onPressed(CurrentTimer currentTimer, BuildContext context) {
     if (!currentTimer.flag) {
       currentTimer.startTimer(context);
@@ -20,10 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
       currentTimer.stopTimer();
     }
   }
-
-  // void _reset(CurrentTimer currentTimer) {
-  //   currentTimer.reset();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -46,27 +40,80 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            Card(
+              margin: EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 10),
+              color: Colors.black,
+              elevation: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor:
+                            getPriorityColor(currentTimer.priority),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 10),
+                        child: Column(
+                          children: [
+                            Text(
+                              currentTimer.title,
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 40),
+                            ),
+                            currentTimer.shortDescription == ""?
+                            Text(
+                              currentTimer.shortDescription,
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ):null,
+
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(),
+                      ),
+                      Container(
+                        child: Column(
+                          children: [
+                            Text(
+                              //TODO currentSession
+                              "${currentTimer.currentSession}/${currentTimer.noOfSessions}",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                            Text(
+                              //TODO currentSession
+                              "${currentTimer.totalWorkTime}/${currentTimer.minuteWorkTimer * currentTimer.noOfSessions}",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 20),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
             PomodoroCircularSlider(),
             Expanded(
-                child: Column(
-              children: [
-                Container(
-                  child: Text(
-                    currentTimer.workorBreakStatus ? "Working" : "Break",
-                    style: TextStyle(color: Colors.white, fontSize: 40),
-                  ),
-                ),
-                Container(
-                  child: Text(currentTimer.title,style: TextStyle(color: Colors.white,fontSize: 40)),
-                ),
-                Container(
-                  child: Text(
-                    "${currentTimer.totalWorkTime}",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                )
-              ],
-            )),
+              child: Column(
+                          children: [
+                            Container(
+                              child: Text(
+                                currentTimer.workorBreakStatus
+                                    ? "Working"
+                                    : "Break",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 40),
+                              ),
+                            ),
+                          ],
+                        ),
+            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -77,33 +124,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: RaisedButton(
                     color: Colors.blue[900],
                     child: currentTimer.flag
-                        ? Icon(
+                        ? const Icon(
                             Icons.pause,
                             color: Colors.white,
                           )
-                        : Icon(
+                        : const Icon(
                             Icons.play_arrow,
                             color: Colors.white,
                             size: 40,
                           ),
-                    shape: CircleBorder(),
+                    shape: const CircleBorder(),
                     onPressed: () => _onPressed(currentTimer, context),
                   ),
                 ),
-                // Container(
-                //   margin: EdgeInsets.only(bottom: 40, left: 30),
-                //   height: 60,
-                //   child: RaisedButton(
-                //     child: Icon(
-                //       Icons.settings_backup_restore,
-                //       color: Colors.white,
-                //       size: 40,
-                //     ),
-                //     onPressed: () => _reset(currentTimer),
-                //     color: Colors.blue[900],
-                //     shape: CircleBorder(),
-                //   ),
-                // ),
               ],
             ),
           ],

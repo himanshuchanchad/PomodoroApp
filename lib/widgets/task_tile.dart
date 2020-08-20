@@ -4,59 +4,43 @@ import 'package:provider/provider.dart';
 import '../utils/priority.dart';
 import '../providers/task.dart';
 import '../providers/timer.dart';
+import './add_task_form.dart';
 
 class TaskTile extends StatelessWidget {
-  final String title;
   final int id;
-  final String shortDescription;
-  final int noOfSessions;
-  final int minuteWorkTimer;
-  final int minuteBreakTimer;
-
-  final int currentSession;
-  final int totalWorkTime ;
-  final int totaBreakTime;
-  final Priority priority;
 
   const TaskTile({
-    this.title,
     this.id,
-    this.shortDescription,
-    this.noOfSessions,
-    this.minuteWorkTimer,
-    this.minuteBreakTimer,
-    this.priority,
-    this.currentSession,
-    this.totalWorkTime,
-    this.totaBreakTime,
   });
 
-  Color getPriorityColor(Priority priority) {
-    if (priority == Priority.Low) {
-      return Colors.green;
-    }
-    if (priority == Priority.Medium) {
-      return Colors.blue;
-    }
-    return Colors.red[900];
-  }
-
-  void loadTask(BuildContext context) {
-    Provider.of<CurrentTimer>(context,listen: false).loadTask(
+  void loadTask(BuildContext context, TaskItem task) {
+    // work here
+    Provider.of<CurrentTimer>(context, listen: false).loadTask(
       id,
-      title,
-      shortDescription,
-      minuteWorkTimer,
-      minuteBreakTimer,
-      noOfSessions,
-      currentSession,
-      totalWorkTime,
-      totaBreakTime,
+      task.title,
+      task.shortDescription,
+      task.minuteWorkTimer,
+      task.minuteBreakTimer,
+      task.noOfSessions,
+      task.currentSession,
+      task.totalWorkTime,
+      task.totalBreakTime,
+      task.priority,
     );
+  }
+  void updateTask(BuildContext context,TaskItem task){
+    Navigator.of(context).push(new MaterialPageRoute<Null>(
+      builder: (BuildContext context) {
+        return AddTaskForm(task:task);
+      },
+      fullscreenDialog: true,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
+    final taskList = Provider.of<Task>(context);
+    final task = taskList.task(id);
     return Container(
       child: Card(
         color: Colors.black,
@@ -91,27 +75,29 @@ class TaskTile extends StatelessWidget {
           },
           direction: DismissDirection.startToEnd,
           child: FlatButton(
-            onPressed: () =>loadTask(context),
+            onPressed: () => updateTask(context, task),//update task
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Row(
-                  // mainAxisAlignment: MainAxisAlignment.center,
+                  // mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     // TODO  a check box
                     CircleAvatar(
-                      backgroundColor: getPriorityColor(priority),
+                      backgroundColor: getPriorityColor(task.priority),
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 10),
                       child: Column(
                         children: [
                           Text(
-                            title,
+                            task.title,
                             style: TextStyle(color: Colors.white, fontSize: 40),
                           ),
                           Text(
-                            shortDescription == null ? "" : shortDescription,
+                            task.shortDescription == null
+                                ? ""
+                                : task.shortDescription,
                             style: TextStyle(color: Colors.white, fontSize: 15),
                           ),
                         ],
@@ -125,16 +111,22 @@ class TaskTile extends StatelessWidget {
                         children: [
                           Text(
                             //TODO currentSession
-                            "$currentSession/$noOfSessions",
+                            "${task.currentSession}/${task.noOfSessions}",
                             style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
                           Text(
                             //TODO currentSession
-                            "$totalWorkTime/${minuteWorkTimer * noOfSessions}",
+                            "${task.totalWorkTime}/${task.minuteWorkTimer * task.noOfSessions}",
                             style: TextStyle(color: Colors.white, fontSize: 20),
                           )
                         ],
                       ),
+                    ),
+                    FlatButton(
+                      color: Colors.white,
+                      shape: CircleBorder(),
+                      child: Icon(Icons.play_arrow,color: Colors.blue,),
+                      onPressed: () => loadTask(context, task),
                     )
                   ],
                 ),

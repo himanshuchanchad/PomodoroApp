@@ -7,13 +7,9 @@ import '../providers/task.dart';
 
 class TaskScreen extends StatelessWidget {
   void _addTask(BuildContext context) {
-    // showDialog(
-    //     context: context,
-    //     builder: (ctx) => AddTaskForm(),
-    // );
     Navigator.of(context).push(new MaterialPageRoute<Null>(
       builder: (BuildContext context) {
-        return AddTaskForm();
+        return AddTaskForm(task:null);
       },
       fullscreenDialog: true,
     ));
@@ -24,7 +20,6 @@ class TaskScreen extends StatelessWidget {
     final taskProvider = Provider.of<Task>(context);
     final task = taskProvider.tasks;
     return Column(
-      
       children: <Widget>[
         Expanded(
           child: taskProvider.getLength() == 0
@@ -35,15 +30,6 @@ class TaskScreen extends StatelessWidget {
                   itemCount: task.length,
                   itemBuilder: (ctx, i) => TaskTile(
                     id: task.keys.toList()[i],
-                    minuteBreakTimer: task.values.toList()[i].minuteBreakTimer,
-                    minuteWorkTimer: task.values.toList()[i].minuteWorkTimer,
-                    noOfSessions: task.values.toList()[i].noOfSessions,
-                    priority: task.values.toList()[i].priority,
-                    shortDescription: task.values.toList()[i].shortDescription,
-                    title: task.values.toList()[i].title,
-                    currentSession: task.values.toList()[i].currentSession,
-                    totalWorkTime: task.values.toList()[i].totalWorkTime,
-                    totaBreakTime: task.values.toList()[i].totalBreakTime,
                   ),
                 ),
         ),

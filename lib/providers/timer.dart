@@ -1,10 +1,11 @@
+import 'package:PomodoroApp/utils/priority.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../utils/play_audio.dart';
 
 class CurrentTimer with ChangeNotifier {
   int id;
-  String _title = "";
+  String _title ="Untitle";
   String _shortDescription = "";
   int _noOfSessions = 6;
   int _currentSession = 0;
@@ -23,6 +24,7 @@ class CurrentTimer with ChangeNotifier {
   String _timerString = '';
   Timer _everySecond;
   PlayAudio _playAudio = PlayAudio();
+  Priority _priority = Priority.Low;
 
   CurrentTimer() {
     getDefaultVal();
@@ -35,6 +37,7 @@ class CurrentTimer with ChangeNotifier {
   int get noOfSessions => _noOfSessions;
   int get totalWorkTime => _totalWorkTime;
   int get totalBreakTime => _totalBreakTime;
+  int get currentSession => _currentSession;
 
   bool get flag => _startOrStop;
   bool get workorBreakStatus => _workOrBreak;
@@ -42,6 +45,8 @@ class CurrentTimer with ChangeNotifier {
   String get timerString => _timerString;
   String get title => _title;
   String get shortDescription => _shortDescription;
+
+  Priority get priority => _priority;
 
   void getDefaultVal() async {
     setTimerString();
@@ -57,17 +62,19 @@ class CurrentTimer with ChangeNotifier {
       int noOfSessions,
       int currentSession,
       int totalWorkTime,
-      int totaBreakTime) {
-      id = id;
-      _title = title;
-      _shortDescription = shortDescription;
-      _minuteWorkTimer = minuteWorkTimer;
-      _minuteBreakTimer = minuteBreakTimer;
-      _noOfSessions = noOfSessions;
-      _currentSession = currentSession;
-      _totalWorkTime = totalWorkTime;
-      _totalBreakTime = totaBreakTime;
-      notifyListeners();
+      int totaBreakTime,
+      Priority priority) {
+    id = id;
+    _title = title;
+    _shortDescription = shortDescription;
+    _minuteWorkTimer = minuteWorkTimer;
+    _minuteBreakTimer = minuteBreakTimer;
+    _noOfSessions = noOfSessions;
+    _currentSession = currentSession;
+    _totalWorkTime = totalWorkTime;
+    _totalBreakTime = totaBreakTime;
+    _priority = priority;
+    notifyListeners();
   }
 
   void setTimerString() {
@@ -83,6 +90,11 @@ class CurrentTimer with ChangeNotifier {
     notifyListeners();
   }
 
+  void setCurrentSession(int value) {
+    _currentSession = value;
+    notifyListeners();
+  }
+
   void toggleflag() {
     _startOrStop = !_startOrStop;
     notifyListeners(); // Remove comments only if it's used change from reset
@@ -90,16 +102,12 @@ class CurrentTimer with ChangeNotifier {
 
   void reset() {
     if (_workOrBreak) {
-      // TODO logic improve
-      _totalWorkTime += _minuteWorkTimer.toInt() - _minuteVal;
       _minuteVal = _minuteBreakTimer.toInt();
+      _currentSession++;
     } else {
-      //TODO logic improve
-      _totalBreakTime += _minuteBreakTimer.toInt() - _minuteVal;
       _minuteVal = _minuteWorkTimer.toInt();
     }
     _workOrBreak = !_workOrBreak;
-    _currentSession++;
     _second = 00;
     stopTimer();
     // _startOrStop = false;
@@ -112,6 +120,11 @@ class CurrentTimer with ChangeNotifier {
       _minuteVal = _minuteVal - 1;
       _second = 19;
       // TODO 19 for debugging
+      if (_workOrBreak) {
+        _totalWorkTime++;
+      } else {
+        _totalBreakTime++;
+      }
       if (_minuteVal < 0) {
         reset();
         _playAudio.play();

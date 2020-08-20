@@ -1,4 +1,3 @@
-import 'package:PomodoroApp/providers/timer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,4 +1,3 @@
-// import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -38,13 +37,13 @@ class TaskItem {
         minuteWorkTimer = json['minuteWorkTimer'],
         minuteBreakTimer = json['minuteBreakTimer'],
         totalWorkTime = json['totalWorkTime'],
-        totalBreakTime=json['totalBreakTime'],
+        totalBreakTime = json['totalBreakTime'],
         priority = getPriorityEnum(json['priority']);
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
-        'shortDesrciption': shortDescription,
+        'shortDescription': shortDescription,
         "noOfSessions": noOfSessions,
         "minuteWorkTimer": minuteWorkTimer,
         "minuteBreakTimer": minuteBreakTimer,
@@ -66,9 +65,13 @@ class Task with ChangeNotifier {
   int _uniqueID = 1;
   double _defaultMinuteWorkTimer = 45;
   double _defaultMinuteBreakTimer = 15;
+  Map<int, TaskItem> _tasks = {};
 
   double get defaultMinuteWorkTimer => _defaultMinuteWorkTimer;
   double get defaultMinuteBreakTimer => _defaultMinuteBreakTimer;
+  TaskItem task(int id) {
+    return _tasks[id];
+  }
 
   void setDefaultMinuteWorkTimer(double value) async {
     _defaultMinuteWorkTimer = value;
@@ -83,8 +86,6 @@ class Task with ChangeNotifier {
     prefs.setString("shortbreak", "$value");
     notifyListeners();
   }
-
-  Map<int, TaskItem> _tasks = {};
 
   Map<int, TaskItem> get tasks {
     if (_tasks.isEmpty) {
@@ -153,16 +154,23 @@ class Task with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeTask(int id) async {
-    if (!_tasks.containsKey(id)) {
-      return;
-    }
+  void updateTask(TaskItem taskItem) async {
+    _tasks.update(taskItem.id, (value) => taskItem);
     final prefs = await SharedPreferences.getInstance();
     final extractedTask =
         jsonDecode(prefs.getString("tasks")) as Map<String, dynamic>;
-    extractedTask.remove(id);
+    extractedTask.update(
+        taskItem.id.toString(), (value) => jsonEncode(taskItem.toJson()));
     prefs.setString("tasks", jsonEncode(extractedTask));
-    // TODO remove it from the shared preferences also
+    notifyListeners();
+  }
+
+  void removeTask(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final extractedTask =
+        jsonDecode(prefs.getString("tasks")) as Map<String, dynamic>;
+    extractedTask.remove(id.toString());
+    prefs.setString("tasks", jsonEncode(extractedTask));
     _tasks.remove(id);
     notifyListeners();
   }
