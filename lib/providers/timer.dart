@@ -5,7 +5,7 @@ import '../utils/play_audio.dart';
 
 class CurrentTimer with ChangeNotifier {
   int id;
-  String _title ="Untitle";
+  String _title ="Untitled";
   String _shortDescription = "";
   int _noOfSessions = 6;
   int _currentSession = 0;

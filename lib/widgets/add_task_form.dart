@@ -5,8 +5,8 @@ import '../utils/priority.dart';
 import '../providers/task.dart';
 
 class AddTaskForm extends StatefulWidget {
-  TaskItem task;
-  AddTaskForm({@required this.task});
+  final TaskItem task;
+  AddTaskForm({this.task});
   @override
   _AddTaskFormState createState() => _AddTaskFormState(task);
 }
@@ -33,6 +33,13 @@ class _AddTaskFormState extends State<AddTaskForm> {
     }
     this.task = task;
   }
+  @override
+  void initState() {
+    _workTimer = Provider.of<Task>(context, listen: false).defaultMinuteWorkTimer;
+    _breakTimer = Provider.of<Task>(context, listen: false).defaultMinuteBreakTimer;
+    super.initState();
+  }
+
   @override
   void dispose() {
     _descriptionFocusNode.dispose();
@@ -165,8 +172,8 @@ class _AddTaskFormState extends State<AddTaskForm> {
               subtitle: Slider(
                 value: _breakTimer,
                 min: 5,
-                max: 15,
-                divisions: 10,
+                max: 20,
+                divisions: 15,
                 label: "${_breakTimer.toInt()}",
                 onChanged: (value) {
                   setState(() {

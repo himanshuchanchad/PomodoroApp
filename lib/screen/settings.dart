@@ -26,7 +26,7 @@ class Settings extends StatelessWidget {
           Container(
             child: Slider(
               value: currentTask.defaultMinuteWorkTimer,
-              min: 1,
+              min: 15,
               max: 59,
               onChanged: (double value) {
                 currentTask.setDefaultMinuteWorkTimer(value);
@@ -34,7 +34,7 @@ class Settings extends StatelessWidget {
               onChangeEnd: (double value) {
                 currentTask.setDefaultMinuteWorkTimer(value);
               },
-              divisions: 58,
+              divisions: 44,
               label: "${currentTask.defaultMinuteWorkTimer.toInt()}",
             ),
           ),
@@ -50,7 +50,7 @@ class Settings extends StatelessWidget {
           Container(
             child: Slider(
               value: currentTask.defaultMinuteBreakTimer,
-              min: 1,
+              min: 5,
               max: 20,
               onChanged: (double value) {
                 currentTask.setDefaultMinuteBreakTimer(value);
@@ -58,7 +58,7 @@ class Settings extends StatelessWidget {
               onChangeEnd: (double value) {
                 currentTask.setDefaultMinuteBreakTimer(value);
               },
-              divisions: 19,
+              divisions: 15,
               label: "${currentTask.defaultMinuteBreakTimer.toInt()}",
               activeColor: Colors.red,
             ),
