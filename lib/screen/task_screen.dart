@@ -47,7 +47,9 @@ class TaskScreen extends StatelessWidget {
                   child: Icon(
                     Icons.add,
                     color: Colors.white,
-                  )),
+                  ),
+                  
+                  ),
             )
           ],
         )

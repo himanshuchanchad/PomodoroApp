@@ -4,62 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/priority.dart';
-
-class TaskItem {
-  int id;
-  String title;
-  String shortDescription;
-  int noOfSessions;
-  int minuteWorkTimer = 45;
-  int minuteBreakTimer = 15;
-
-  int currentSession = 0;
-  int totalWorkTime = 0;
-  int totalBreakTime = 0;
-  DateTime date = DateTime.now();
-  Priority priority = Priority.Low;
-  bool _isDone = false;
-
-  TaskItem({
-    this.id,
-    this.title,
-    this.shortDescription,
-    this.noOfSessions,
-    this.minuteWorkTimer,
-    this.minuteBreakTimer,
-    this.priority,
-  });
-  TaskItem.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        title = json['title'],
-        shortDescription = json['shortDescription'],
-        noOfSessions = json['noOfSessions'],
-        minuteWorkTimer = json['minuteWorkTimer'],
-        minuteBreakTimer = json['minuteBreakTimer'],
-        totalWorkTime = json['totalWorkTime'],
-        totalBreakTime = json['totalBreakTime'],
-        priority = getPriorityEnum(json['priority']);
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'shortDescription': shortDescription,
-        "noOfSessions": noOfSessions,
-        "minuteWorkTimer": minuteWorkTimer,
-        "minuteBreakTimer": minuteBreakTimer,
-        "currentSession": currentSession,
-        "totalWorkTime": totalWorkTime,
-        "totalBreakTime": totalBreakTime,
-        "date": date.toIso8601String(),
-        "priority": getPriorityString(priority),
-        "_isDone": _isDone,
-      };
-
-  bool getTaskStatus() => _isDone;
-  void toggleTaskStatus() {
-    _isDone = !_isDone;
-  }
-}
+import '../models/task_item.dart';
 
 class Task with ChangeNotifier {
   int _uniqueID = 1;
@@ -135,6 +80,7 @@ class Task with ChangeNotifier {
       minuteBreakTimer: minuteBreakTimer,
       priority: priority,
     );
+
     _tasks.putIfAbsent(_uniqueID, () => taskItem);
 
     final prefs = await SharedPreferences.getInstance();
@@ -163,6 +109,15 @@ class Task with ChangeNotifier {
         taskItem.id.toString(), (value) => jsonEncode(taskItem.toJson()));
     prefs.setString("tasks", jsonEncode(extractedTask));
     notifyListeners();
+  }
+
+  void saveTask() async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<String, dynamic> savedTask = {};
+    _tasks.forEach((key, value) {
+      savedTask.putIfAbsent(key.toString(), () => jsonEncode(value.toJson()));
+    });
+    prefs.setString("tasks", jsonEncode(savedTask));
   }
 
   void removeTask(int id) async {

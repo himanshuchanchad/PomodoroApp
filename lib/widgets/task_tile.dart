@@ -1,10 +1,13 @@
+import 'package:PomodoroApp/widgets/task_details.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/priority.dart';
 import '../providers/task.dart';
 import '../providers/timer.dart';
-import './add_task_form.dart';
+// import './add_task_form.dart';
+import './task_details.dart';
+import '../models/task_item.dart';
 
 class TaskTile extends StatelessWidget {
   final int id;
@@ -15,23 +18,14 @@ class TaskTile extends StatelessWidget {
 
   void loadTask(BuildContext context, TaskItem task) {
     // work here
-    Provider.of<CurrentTimer>(context, listen: false).loadTask(
-      id,
-      task.title,
-      task.shortDescription,
-      task.minuteWorkTimer,
-      task.minuteBreakTimer,
-      task.noOfSessions,
-      task.currentSession,
-      task.totalWorkTime,
-      task.totalBreakTime,
-      task.priority,
-    );
+    Provider.of<CurrentTimer>(context, listen: false).loadTask(task);
   }
-  void updateTask(BuildContext context,TaskItem task){
+
+  void updateTask(BuildContext context, TaskItem task) {
     Navigator.of(context).push(new MaterialPageRoute<Null>(
       builder: (BuildContext context) {
-        return AddTaskForm(task:task);
+        // return AddTaskForm(task:task);
+        return TaskDetails(task: task);
       },
       fullscreenDialog: true,
     ));
@@ -43,6 +37,7 @@ class TaskTile extends StatelessWidget {
     final task = taskList.task(id);
     return Container(
       child: Card(
+        shadowColor: Colors.grey[400],
         color: Colors.black,
         elevation: 5,
         child: Dismissible(
@@ -75,12 +70,11 @@ class TaskTile extends StatelessWidget {
           },
           direction: DismissDirection.startToEnd,
           child: FlatButton(
-            onPressed: () => updateTask(context, task),//update task
+            onPressed: () => updateTask(context, task),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     // TODO  a check box
                     CircleAvatar(
@@ -90,15 +84,23 @@ class TaskTile extends StatelessWidget {
                       margin: EdgeInsets.only(left: 10),
                       child: Column(
                         children: [
-                          Text(
-                            task.title,
-                            style: TextStyle(color: Colors.white, fontSize: 40),
+                          Container(
+                            width: 160,//temporary solution
+                            child: Text(
+                              task.title,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: Colors.white, fontSize: 40),
+                            ),
                           ),
-                          Text(
-                            task.shortDescription == null
-                                ? ""
-                                : task.shortDescription,
-                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          Container(
+                            width: 100,
+                            child: Text(
+                              task.shortDescription == null
+                                  ? ""
+                                  : task.shortDescription,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: Colors.white, fontSize: 15),
+                            ),
                           ),
                         ],
                       ),
@@ -106,27 +108,18 @@ class TaskTile extends StatelessWidget {
                     Expanded(
                       child: Container(),
                     ),
-                    Container(
-                      child: Column(
-                        children: [
-                          Text(
-                            //TODO currentSession
-                            "${task.currentSession}/${task.noOfSessions}",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                          Text(
-                            //TODO currentSession
-                            "${task.totalWorkTime}/${task.minuteWorkTimer * task.noOfSessions}",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          )
-                        ],
-                      ),
-                    ),
                     FlatButton(
-                      color: Colors.white,
+                      color: Colors.transparent,
+                      disabledColor: Colors.red[700],
                       shape: CircleBorder(),
-                      child: Icon(Icons.play_arrow,color: Colors.blue,),
-                      onPressed: () => loadTask(context, task),
+                      child: Icon(
+                        Icons.play_circle_filled,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                      onPressed: task.taskStatus == false
+                          ? () => loadTask(context, task)
+                          : null,
                     )
                   ],
                 ),

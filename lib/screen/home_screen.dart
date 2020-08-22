@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/timer.dart';
+import '../providers/task.dart';
 import '../widgets/pomodoro_slider_widget.dart';
 import '../utils/priority.dart';
 
@@ -10,7 +11,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>  with WidgetsBindingObserver{
+
   void _onPressed(CurrentTimer currentTimer, BuildContext context) {
     if (!currentTimer.flag) {
       currentTimer.startTimer(context);
@@ -18,6 +20,31 @@ class _HomeScreenState extends State<HomeScreen> {
       currentTimer.stopTimer();
     }
   }
+   @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.detached:
+      case AppLifecycleState.inactive:
+        Provider.of<Task>(context, listen: false).saveTask();
+        break;
+      default:
+        break;
+    }
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Card(
-              margin: EdgeInsets.only(top: 10,left: 5,right: 5,bottom: 10),
+              margin: EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 10),
               color: Colors.black,
               elevation: 5,
               child: Column(
@@ -56,18 +83,26 @@ class _HomeScreenState extends State<HomeScreen> {
                       Container(
                         margin: EdgeInsets.only(left: 10),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              currentTimer.title,
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 40),
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.5,
+                              child: Text(
+                                currentTimer.title,
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    TextStyle(color: Colors.white, fontSize: 40),
+                              ),
                             ),
-                            currentTimer.shortDescription == ""?
-                            Text(
-                              currentTimer.shortDescription,
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 20),
-                            ):null,
+                            Container(
+                              width: MediaQuery.of(context).size.width*0.6,
+                              child: Text(
+                                currentTimer.shortDescription,
+                                overflow: TextOverflow.ellipsis,
+                                style:
+                                    TextStyle(color: Colors.white, fontSize: 20),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -78,13 +113,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           children: [
                             Text(
-                              //TODO currentSession
                               "${currentTimer.currentSession}/${currentTimer.noOfSessions}",
                               style:
                                   TextStyle(color: Colors.white, fontSize: 20),
                             ),
                             Text(
-                              //TODO currentSession
                               "${currentTimer.totalWorkTime}/${currentTimer.minuteWorkTimer * currentTimer.noOfSessions}",
                               style:
                                   TextStyle(color: Colors.white, fontSize: 20),
@@ -100,18 +133,15 @@ class _HomeScreenState extends State<HomeScreen> {
             PomodoroCircularSlider(),
             Expanded(
               child: Column(
-                          children: [
-                            Container(
-                              child: Text(
-                                currentTimer.workorBreakStatus
-                                    ? "Working"
-                                    : "Break",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 40),
-                              ),
-                            ),
-                          ],
-                        ),
+                children: [
+                  Container(
+                    child: Text(
+                      currentTimer.workorBreakStatus ? "Working" : "Break",
+                      style: TextStyle(color: Colors.white, fontSize: 40),
+                    ),
+                  ),
+                ],
+              ),
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,

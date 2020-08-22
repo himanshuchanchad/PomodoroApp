@@ -1,22 +1,15 @@
+import 'package:PomodoroApp/providers/task.dart';
 import 'package:PomodoroApp/utils/priority.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+
 import '../utils/play_audio.dart';
+import '../models/task_item.dart';
 
 class CurrentTimer with ChangeNotifier {
-  int id;
-  String _title ="Untitled";
-  String _shortDescription = "";
-  int _noOfSessions = 6;
-  int _currentSession = 0;
-
+  TaskItem task;
   int _minuteVal = 45;
   int _second = 0;
-  int _minuteWorkTimer = 45;
-  int _minuteBreakTimer = 15;
-
-  int _totalWorkTime = 0;
-  int _totalBreakTime = 0;
 
   bool _workOrBreak = true;
   bool _startOrStop = false;
@@ -24,56 +17,46 @@ class CurrentTimer with ChangeNotifier {
   String _timerString = '';
   Timer _everySecond;
   PlayAudio _playAudio = PlayAudio();
-  Priority _priority = Priority.Low;
 
   CurrentTimer() {
+    // TODO last running one which is not finished
+    this.task = TaskItem(
+        id: null,
+        minuteBreakTimer: 15,
+        minuteWorkTimer: 45,
+        noOfSessions: 6,
+        priority: Priority.Low,
+        shortDescription: "",
+        title: "Untitled");
     getDefaultVal();
   }
   // getter
   int get minuteVal => _minuteVal;
   int get second => _second;
-  int get minuteWorkTimer => _minuteWorkTimer;
-  int get minuteBreakTimer => _minuteBreakTimer;
-  int get noOfSessions => _noOfSessions;
-  int get totalWorkTime => _totalWorkTime;
-  int get totalBreakTime => _totalBreakTime;
-  int get currentSession => _currentSession;
+  int get minuteWorkTimer => task.minuteWorkTimer;
+  int get minuteBreakTimer => task.minuteBreakTimer;
+  int get noOfSessions => task.noOfSessions;
+  int get totalWorkTime => task.totalWorkTime;
+  int get totalBreakTime => task.totalBreakTime;
+  int get currentSession => task.currentSession;
 
   bool get flag => _startOrStop;
   bool get workorBreakStatus => _workOrBreak;
 
   String get timerString => _timerString;
-  String get title => _title;
-  String get shortDescription => _shortDescription;
+  String get title => task.title;
+  String get shortDescription => task.shortDescription;
 
-  Priority get priority => _priority;
+  Priority get priority => task.priority;
 
   void getDefaultVal() async {
     setTimerString();
   }
 
   // setter
-  void loadTask(
-      int id,
-      String title,
-      String shortDescription,
-      int minuteWorkTimer,
-      int minuteBreakTimer,
-      int noOfSessions,
-      int currentSession,
-      int totalWorkTime,
-      int totaBreakTime,
-      Priority priority) {
-    id = id;
-    _title = title;
-    _shortDescription = shortDescription;
-    _minuteWorkTimer = minuteWorkTimer;
-    _minuteBreakTimer = minuteBreakTimer;
-    _noOfSessions = noOfSessions;
-    _currentSession = currentSession;
-    _totalWorkTime = totalWorkTime;
-    _totalBreakTime = totaBreakTime;
-    _priority = priority;
+  void loadTask(TaskItem task) {
+    // TODO save the last running or completed one 
+    this.task = task;
     notifyListeners();
   }
 
@@ -86,12 +69,12 @@ class CurrentTimer with ChangeNotifier {
   }
 
   void setNoOfSessions(int value) {
-    _noOfSessions = value;
+    task.noOfSessions = value;
     notifyListeners();
   }
 
   void setCurrentSession(int value) {
-    _currentSession = value;
+    task.currentSession = value;
     notifyListeners();
   }
 
@@ -102,10 +85,14 @@ class CurrentTimer with ChangeNotifier {
 
   void reset() {
     if (_workOrBreak) {
-      _minuteVal = _minuteBreakTimer.toInt();
-      _currentSession++;
+      _minuteVal = task.minuteBreakTimer.toInt();
+      task.currentSession++;
+      if (task.currentSession == task.noOfSessions) {
+        // need to show something that it is done
+        task.toggleTaskStatus();
+      }
     } else {
-      _minuteVal = _minuteWorkTimer.toInt();
+      _minuteVal = task.minuteWorkTimer.toInt();
     }
     _workOrBreak = !_workOrBreak;
     _second = 00;
@@ -118,12 +105,11 @@ class CurrentTimer with ChangeNotifier {
   void subtract(Timer _everySecond, BuildContext context) {
     if (_second == 0) {
       _minuteVal = _minuteVal - 1;
-      _second = 19;
-      // TODO 19 for debugging
+      _second =59;
       if (_workOrBreak) {
-        _totalWorkTime++;
+        task.totalWorkTime++;
       } else {
-        _totalBreakTime++;
+        task.totalBreakTime++;
       }
       if (_minuteVal < 0) {
         reset();

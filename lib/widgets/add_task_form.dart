@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../utils/priority.dart';
 import '../providers/task.dart';
+import '../models/task_item.dart';
 
 class AddTaskForm extends StatefulWidget {
   final TaskItem task;
@@ -35,8 +36,9 @@ class _AddTaskFormState extends State<AddTaskForm> {
   }
   @override
   void initState() {
-    _workTimer = Provider.of<Task>(context, listen: false).defaultMinuteWorkTimer;
-    _breakTimer = Provider.of<Task>(context, listen: false).defaultMinuteBreakTimer;
+    final taskProvider = Provider.of<Task>(context, listen: false);
+    _workTimer = taskProvider.defaultMinuteWorkTimer;
+    _breakTimer = taskProvider.defaultMinuteBreakTimer;
     super.initState();
   }
 
@@ -62,6 +64,8 @@ class _AddTaskFormState extends State<AddTaskForm> {
       task.minuteWorkTimer = _workTimer.toInt();
       task.priority = taskPriority;
       Provider.of<Task>(context, listen: false).updateTask(task);
+    Navigator.of(context).pop();
+    Navigator.of(context).pop();
     } else {
       try {
         Provider.of<Task>(context, listen: false).addTask(
@@ -87,9 +91,9 @@ class _AddTaskFormState extends State<AddTaskForm> {
         );
         return;
       }
+    Navigator.of(context).pop();
     }
 
-    Navigator.of(context).pop();
   }
 
   @override
@@ -108,151 +112,157 @@ class _AddTaskFormState extends State<AddTaskForm> {
               )),
         ],
       ),
-      body: Form(
-        key: _form,
-        child: ListView(
-          children: <Widget>[
-            TextFormField(
-              controller: _titleController,
-              decoration: InputDecoration(labelText: "Title"),
-              textInputAction: TextInputAction.next,
-              onFieldSubmitted: (_) {
-                FocusScope.of(context).requestFocus(_descriptionFocusNode);
-              },
-              validator: (value) {
-                if (value.isEmpty) {
-                  return "Title cannot be empty";
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: "Description"),
-              focusNode: _descriptionFocusNode,
-              onFieldSubmitted: (_) {
-                Focus.of(context).unfocus();
-              },
-            ),
-            ListTile(
-              title: Text("No of Sessions"),
-              contentPadding: EdgeInsets.all(10),
-              subtitle: Slider(
-                activeColor: Colors.red,
-                inactiveColor: Colors.blue,
-                value: _noOfSession,
-                min: 1,
-                divisions: 7,
-                max: 8,
-                label: "${_noOfSession.toInt()}",
-                onChanged: (value) {
-                  setState(() {
-                    _noOfSession = value;
-                  });
+      body: Container(
+        margin: EdgeInsets.only(left: 10,right: 10,top:10),
+        child: Form(
+          key: _form,
+          child: ListView(
+            children: <Widget>[
+              TextFormField(
+                controller: _titleController,
+                decoration: InputDecoration(labelText: "Title",),
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (_) {
+                  FocusScope.of(context).requestFocus(_descriptionFocusNode);
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Title cannot be empty";
+                  }
+                  return null;
                 },
               ),
-            ),
-            ListTile(
-              title: Text("Work(minutes)"),
-              subtitle: Slider(
-                value: _workTimer,
-                min: 15,
-                max: 59,
-                divisions: 44,
-                label: "${_workTimer.toInt()}",
-                onChanged: (value) {
-                  setState(() {
-                    _workTimer = value;
-                  });
+              TextFormField(
+                controller: _descriptionController,
+                keyboardType: TextInputType.multiline,
+                maxLines: 20,
+                minLines: 2,
+                decoration: InputDecoration(labelText: "Description"),
+                focusNode: _descriptionFocusNode,
+                onFieldSubmitted: (_) {
+                  Focus.of(context).unfocus();
                 },
               ),
-            ),
-            ListTile(
-              title: Text("Break(minutes)"),
-              subtitle: Slider(
-                value: _breakTimer,
-                min: 5,
-                max: 20,
-                divisions: 15,
-                label: "${_breakTimer.toInt()}",
-                onChanged: (value) {
-                  setState(() {
-                    _breakTimer = value;
-                  });
-                },
-              ),
-            ),
-            Container(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  "Priority",
-                  style: TextStyle(color: Colors.black, fontSize: 30),
+              ListTile(
+                title: Text("No of Sessions"),
+                contentPadding: EdgeInsets.all(10),
+                subtitle: Slider(
+                  activeColor: Colors.red,
+                  inactiveColor: Colors.blue,
+                  value: _noOfSession,
+                  min: 1,
+                  divisions: 7,
+                  max: 8,
+                  label: "${_noOfSession.toInt()}",
+                  onChanged: (value) {
+                    setState(() {
+                      _noOfSession = value;
+                    });
+                  },
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    RaisedButton(
-                      child: Text(
-                        "Low",
-                        style: TextStyle(
-                          color: taskPriority == Priority.Low
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                      color: taskPriority == Priority.Low
-                          ? Colors.green
-                          : Colors.white,
-                      onPressed: () {
-                        setState(() {
-                          taskPriority = Priority.Low;
-                        });
-                      },
-                    ),
-                    RaisedButton(
-                      child: Text(
-                        "Medium",
-                        style: TextStyle(
-                          color: taskPriority == Priority.Medium
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                      color: taskPriority == Priority.Medium
-                          ? Colors.blue
-                          : Colors.white,
-                      onPressed: () {
-                        setState(() {
-                          taskPriority = Priority.Medium;
-                        });
-                      },
-                    ),
-                    RaisedButton(
-                      child: Text(
-                        "High",
-                        style: TextStyle(
-                          color: taskPriority == Priority.High
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                      color: taskPriority == Priority.High
-                          ? Colors.red
-                          : Colors.white,
-                      onPressed: () {
-                        setState(() {
-                          taskPriority = Priority.High;
-                        });
-                      },
-                    ),
-                  ],
+              ),
+              ListTile(
+                title: Text("Work(minutes)"),
+                subtitle: Slider(
+                  value: _workTimer,
+                  min: 15,
+                  max: 59,
+                  divisions: 44,
+                  label: "${_workTimer.toInt()}",
+                  onChanged: (value) {
+                    setState(() {
+                      _workTimer = value;
+                    });
+                  },
                 ),
-              ],
-            )),
-          ],
+              ),
+              ListTile(
+                title: Text("Break(minutes)"),
+                subtitle: Slider(
+                  value: _breakTimer,
+                  min: 5,
+                  max: 20,
+                  divisions: 15,
+                  label: "${_breakTimer.toInt()}",
+                  onChanged: (value) {
+                    setState(() {
+                      _breakTimer = value;
+                    });
+                  },
+                ),
+              ),
+              Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    "Priority",
+                    style: TextStyle(color: Colors.black, fontSize: 30),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      RaisedButton(
+                        child: Text(
+                          "Low",
+                          style: TextStyle(
+                            color: taskPriority == Priority.Low
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        color: taskPriority == Priority.Low
+                            ? Colors.green
+                            : Colors.white,
+                        onPressed: () {
+                          setState(() {
+                            taskPriority = Priority.Low;
+                          });
+                        },
+                      ),
+                      RaisedButton(
+                        child: Text(
+                          "Medium",
+                          style: TextStyle(
+                            color: taskPriority == Priority.Medium
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        color: taskPriority == Priority.Medium
+                            ? Colors.yellow[900]
+                            : Colors.white,
+                        onPressed: () {
+                          setState(() {
+                            taskPriority = Priority.Medium;
+                          });
+                        },
+                      ),
+                      RaisedButton(
+                        child: Text(
+                          "High",
+                          style: TextStyle(
+                            color: taskPriority == Priority.High
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        color: taskPriority == Priority.High
+                            ? Colors.red
+                            : Colors.white,
+                        onPressed: () {
+                          setState(() {
+                            taskPriority = Priority.High;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              )),
+            ],
+          ),
         ),
       ),
     );

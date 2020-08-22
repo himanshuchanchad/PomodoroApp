@@ -29,7 +29,7 @@ Color getPriorityColor(Priority priority) {
       return Colors.green;
     }
     if (priority == Priority.Medium) {
-      return Colors.blue;
+      return Colors.yellow[900];
     }
     return Colors.red[900];
   }

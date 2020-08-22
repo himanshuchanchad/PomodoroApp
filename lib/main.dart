@@ -9,7 +9,8 @@ import './providers/timer.dart';
 import 'providers/task.dart';
 import './screen/home_screen.dart';
 import './screen/settings.dart';
-import './screen/task_screeen.dart';
+import 'screen/task_screen.dart';
+import './utils/theme_data.dart';
 
 void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -24,7 +25,7 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp>{
   int _selectedIndex = 1;
   int minuteVal;
   PageController _pageController = PageController(initialPage: 1);
@@ -33,10 +34,11 @@ class _MyAppState extends State<MyApp> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _pageController.animateToPage(index,
-          duration: Duration(seconds: 1),
-          curve: Curves.ease,
-          );
+      _pageController.animateToPage(
+        index,
+        duration: Duration(seconds: 1),
+        curve: Curves.ease,
+      );
     });
   }
 
@@ -51,26 +53,14 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: Colors.black,
-          primarySwatch: Colors.blue,
-          splashColor: Colors.pink[200],
-          accentColor: Colors.white,
-          primaryTextTheme: TextTheme(
-            headline6:
-                TextStyle(color: Colors.white,),
-              
-          ),
-        ),
+        theme: themeData,//edit in util/theme_data.dart
         home: Scaffold(
           appBar: AppBar(
             title: Center(
-                child: Text(
-              "Pomodoro",
-              style: TextStyle(fontStyle: FontStyle.italic),
-            )),
+              child: Text(
+                "Pomodoro"),
+            ),
           ),
-          // body: screen[_selectedIndex],
           body: PageView(
             controller: _pageController,
             children: screen,
@@ -96,13 +86,8 @@ class _MyAppState extends State<MyApp> {
                 title: Text('Settings'),
               ),
             ],
-            selectedFontSize: 16.0,
             onTap: _onItemTapped,
-            backgroundColor: Colors.black,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.orange[400],
             currentIndex: _selectedIndex,
-            type: BottomNavigationBarType.fixed,
           ),
         ),
       ),
