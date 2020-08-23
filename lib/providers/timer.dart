@@ -21,13 +21,14 @@ class CurrentTimer with ChangeNotifier {
   CurrentTimer() {
     // TODO last running one which is not finished
     this.task = TaskItem(
-        id: null,
-        minuteBreakTimer: 15,
-        minuteWorkTimer: 45,
-        noOfSessions: 6,
-        priority: Priority.Low,
-        shortDescription: "",
-        title: "Untitled");
+      id: null,
+      minuteBreakTimer: 15,
+      minuteWorkTimer: 45,
+      noOfSessions: 6,
+      priority: Priority.Low,
+      shortDescription: "",
+      title: "Untitled",
+    );
     getDefaultVal();
   }
   // getter
@@ -55,7 +56,7 @@ class CurrentTimer with ChangeNotifier {
 
   // setter
   void loadTask(TaskItem task) {
-    // TODO save the last running or completed one 
+    // TODO save the last running or completed one
     this.task = task;
     notifyListeners();
   }
@@ -105,7 +106,7 @@ class CurrentTimer with ChangeNotifier {
   void subtract(Timer _everySecond, BuildContext context) {
     if (_second == 0) {
       _minuteVal = _minuteVal - 1;
-      _second =59;
+      _second = 59;
       if (_workOrBreak) {
         task.totalWorkTime++;
       } else {
@@ -150,7 +151,9 @@ class CurrentTimer with ChangeNotifier {
   void stopTimer() {
     try {
       _everySecond.cancel();
-    } catch (e) {}
+    } catch (e) {
+      print("error occured ");
+    }
     _everySecond = null;
     _startOrStop = false;
     notifyListeners();

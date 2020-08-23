@@ -85,7 +85,7 @@ class TaskTile extends StatelessWidget {
                       child: Column(
                         children: [
                           Container(
-                            width: 160,//temporary solution
+                            width: MediaQuery.of(context).size.width*0.5,
                             child: Text(
                               task.title,
                               overflow: TextOverflow.ellipsis,

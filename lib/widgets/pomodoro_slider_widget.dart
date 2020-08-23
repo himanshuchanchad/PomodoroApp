@@ -27,7 +27,9 @@ class PomodoroCircularSlider extends StatelessWidget {
               ),
         ),
         min: 0,
-        max: currentTimer.workorBreakStatus? currentTimer.minuteWorkTimer.toDouble():currentTimer.minuteBreakTimer.toDouble(),
+        max: currentTimer.workorBreakStatus
+            ? currentTimer.minuteWorkTimer.toDouble()
+            : currentTimer.minuteBreakTimer.toDouble(),
         initialValue: currentTimer.minuteVal.toDouble(),
       ),
     );
